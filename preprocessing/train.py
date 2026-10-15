@@ -18,12 +18,17 @@ from sklearn.metrics import (accuracy_score, precision_score, recall_score,
 
 # ---------- 1. Load and clean ----------
 df = pd.read_csv("../dataset/Loan_Data.csv")
+print("Total rows loaded:", df.shape[0])
+print("missing values:\n", df.isnull().sum())
 df["Loan_Status"] = df["Loan_Status"].replace("N/", "N").map({"Y": 1, "N": 0})
 df["Dependents"] = df["Dependents"].replace("3+", "3")
-df = df.drop(columns=["Loan_ID"]).drop_duplicates() ##
+df = df.drop(columns=["Loan_ID"])
+print("Duplicate rows found:", df.duplicated().sum())
+df = df.drop_duplicates()
+print("Rows after dropping duplicates:", df.shape[0])
 df = add_features(df)
 
-print("Rows:", df.shape[0]) ##
+print("Rows:", df.shape[0]) 
 print(df["Loan_Status"].value_counts())
 
 # ---------- 2. Split ----------
@@ -31,6 +36,7 @@ X = df.drop(columns=["Loan_Status"])
 y = df["Loan_Status"]
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y)
+print("training rows:", X_train.shape[0], "test rows:", X_test.shape[0])
 
 # ---------- 3. Preprocessing (saved inside the model) ----------
 num_cols = ["ApplicantIncome", "CoapplicantIncome", "LoanAmount",
